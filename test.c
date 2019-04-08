@@ -15,6 +15,10 @@ int main()
 		printf("Error");
 			}
 			strcpy(p,"something");
-	printf("%s",p);
+	printf("%s\n",p);
+
+	int *number = mmap(0,4,PROT_READ|PROT_WRITE,MAP_SHARED|MAP_ANONYMOUS,-1,0);
+	*number =4;
+	printf("%d\n",*number);
 	return 0;
 }
