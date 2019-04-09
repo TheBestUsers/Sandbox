@@ -3,16 +3,16 @@ build:sandbox detour.o libdetour.so test
 
 
 sandbox:sandbox.c
-	gcc  -o $@ $< -g 
+	gcc  -O0 -o $@ $< -g 
 
 detour.o:detour.c
-	gcc -c -fPIC -o $@ $<
+	gcc -O0 -c -fPIC -o $@ $<
 
 libdetour.so:detour.o
-	gcc -shared -o $@ $< -ldl  
+	gcc -O0 -shared -o $@ $< -ldl  
 
 test:test.c
-	gcc -o $@ $< -g
+	gcc -O0 -o $@ $< -g
 
 clean:
 	rm  sandbox libdetour.so test detour.o

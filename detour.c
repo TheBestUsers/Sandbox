@@ -19,6 +19,9 @@ static void __attribute__((destructor)) uninit()
 typedef size_t (*strlen_fn)(const char *);
 typedef int (*_strcmp)(const char *,const char*);
 typedef  void*(*_mmap)(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
+typedef void*(*_memcpy)(void *,const void *, size_t);
+typedef int (*_open)(const char *,int , mode_t);
+typedef int (*_socks)(int domain, int type, int protocol);
 
 
 int strcmp(const char *s1, const char *s2)
@@ -46,3 +49,34 @@ void * mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset
 	
 }
 
+void *memcpy(void *dest, const void *src, size_t n)
+{
+	if(sizeof(dest)<n) return NULL;
+
+	_memcpy custommem = (_memcpy) dlsym(RTLD_NEXT,"memcpy");
+
+	return custommem(dest,src,n);
+
+
+}
+
+int open(const char* pathname,int flags, mode_t t)
+{
+	_open myopen = (_open)dlsym(RTLD_NEXT,"open");
+
+	return myopen(pathname,flags,t);
+}
+
+int socket(int domain, int type, int protocol)
+{
+	printf("The Program tries to open up a socket for network connection\n");
+	printf("Do you let it run ?(y/n)\n");
+	char ch;
+	scanf("%c",&ch);
+	if(ch == 'y')
+		{
+			_socks mysocket = (_socks) dlsym(RTLD_NEXT,"socket");
+			return mysocket(domain,type,protocol);  
+		}
+	else return 0;
+}
