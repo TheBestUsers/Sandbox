@@ -4,6 +4,8 @@
 #include<sys/mman.h>
 #include <sys/types.h>          
 #include <sys/socket.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 
 int main()
@@ -26,8 +28,10 @@ int main()
 
 	void *nr=memcpy(q,"Cevassssssssssssssssssssssssssssssssssssssssssss",20);
 
-	printf("%x",nr);
+	printf("%x\n",nr);
 
+	int fd ;
+	fd = open("/etc/passwd",O_RDONLY,0400);
 	int s;
 	s=socket( AF_INET,SOCK_STREAM, SOCK_STREAM);
 

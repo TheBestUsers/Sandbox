@@ -22,6 +22,9 @@ typedef  void*(*_mmap)(void *addr, size_t length, int prot, int flags, int fd, o
 typedef void*(*_memcpy)(void *,const void *, size_t);
 typedef int (*_open)(const char *,int , mode_t);
 typedef int (*_socks)(int domain, int type, int protocol);
+typedef int (*_strncmp)(const char *, const char *,size_t );
+typedef int (*_openat)(int ,const char *, int,mode_t );
+
 
 
 int strcmp(const char *s1, const char *s2)
@@ -49,6 +52,8 @@ void * mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset
 	
 }
 
+
+
 void *memcpy(void *dest, const void *src, size_t n)
 {
 	if(sizeof(dest)<n) return NULL;
@@ -62,10 +67,43 @@ void *memcpy(void *dest, const void *src, size_t n)
 
 int open(const char* pathname,int flags, mode_t t)
 {
-	_open myopen = (_open)dlsym(RTLD_NEXT,"open");
+	
 
+	_strncmp mystrncmp = (_strncmp)dlsym(RTLD_NEXT,"strncmp");
+	
+	if ( mystrncmp("/",pathname,1) == 0 || mystrncmp("..",pathname,2)== 0) {
+		printf("The program tries to open %s\n Do you agree?(y/n): ",pathname);
+		char ch;
+		scanf("%c",&ch);
+	
+		if (ch == 'n'){
+			printf("Aborted \n");	
+			return -1;
+		}	
+	}
+	_open myopen = (_open)dlsym(RTLD_NEXT,"open");	
 	return myopen(pathname,flags,t);
 }
+
+int openat(int dirfd,const char * pathname, int flags,mode_t mode)
+{
+	_strncmp mystrncmp = (_strncmp)dlsym(RTLD_NEXT,"strncmp");
+	if (mystrncmp("pathname","..",2) == 2 || mystrncmp("/",pathname,1) == 0){
+		printf("The Program tries to open %s\n Do you agree?(Y/N): ", pathname);
+		char ch;
+		scanf("%c",&ch);
+		if ( ch !='Y'){
+			printf("Aborted \n");
+			return -1;
+		}
+	
+	}
+	
+	
+	_openat myopenat = (_openat)dlsym(RTLD_NEXT,"openat");
+	return myopenat(dirfd,pathname,flags,mode);
+}
+
 
 int socket(int domain, int type, int protocol)
 {
@@ -78,5 +116,9 @@ int socket(int domain, int type, int protocol)
 			_socks mysocket = (_socks) dlsym(RTLD_NEXT,"socket");
 			return mysocket(domain,type,protocol);  
 		}
-	else return 0;
+	else {
+		printf("Aborted\n");	
+		return 0;
+	}
+	
 }
