@@ -24,6 +24,8 @@ typedef int (*_open)(const char *,int , mode_t);
 typedef int (*_socks)(int domain, int type, int protocol);
 typedef int (*_strncmp)(const char *, const char *,size_t );
 typedef int (*_openat)(int ,const char *, int,mode_t );
+typedef int (*_memcmp)(const void *s1, const void *s2, size_t n);
+
 
 
 
@@ -70,13 +72,13 @@ int open(const char* pathname,int flags, mode_t t)
 	
 
 	_strncmp mystrncmp = (_strncmp)dlsym(RTLD_NEXT,"strncmp");
-	
+		
 	if ( mystrncmp("/",pathname,1) == 0 || mystrncmp("..",pathname,2)== 0) {
-		printf("The program tries to open %s\n Do you agree?(y/n): ",pathname);
-		char ch;
-		scanf("%c",&ch);
+		printf("The program tries to open %s\n Do you agree?(yes/no): ",pathname);
+		char ans[5];
+		scanf("%s",ans);
 	
-		if (ch == 'n'){
+		if (mystrncmp("yes",ans,3)!=0){
 			printf("Aborted \n");	
 			return -1;
 		}	
@@ -88,11 +90,12 @@ int open(const char* pathname,int flags, mode_t t)
 int openat(int dirfd,const char * pathname, int flags,mode_t mode)
 {
 	_strncmp mystrncmp = (_strncmp)dlsym(RTLD_NEXT,"strncmp");
+	
 	if (mystrncmp("pathname","..",2) == 2 || mystrncmp("/",pathname,1) == 0){
-		printf("The Program tries to open %s\n Do you agree?(Y/N): ", pathname);
-		char ch;
-		scanf("%c",&ch);
-		if ( ch !='Y'){
+		printf("The Program tries to open %s\n Do you agree?(yes/no): ", pathname);
+		char ans[5];
+		scanf("%s",ans);
+		if ( mystrncmp(ans,"yes",3)!=0){
 			printf("Aborted \n");
 			return -1;
 		}
@@ -108,11 +111,15 @@ int openat(int dirfd,const char * pathname, int flags,mode_t mode)
 int socket(int domain, int type, int protocol)
 {
 	printf("The Program tries to open up a socket for network connection\n");
-	printf("Do you let it run ?(y/n)\n");
-	char ch;
-	scanf("%c",&ch);
-	if(ch == 'y')
-		{
+	printf("Do you let it run ?(yes/no)\n");
+	char ans[5];
+	scanf("%s",ans);
+	_strncmp mystrncmp = (_strncmp)dlsym(RTLD_NEXT,"strncmp");
+	
+	
+	if(mystrncmp(ans,"yes",3)==0)
+	
+	{
 			_socks mysocket = (_socks) dlsym(RTLD_NEXT,"socket");
 			return mysocket(domain,type,protocol);  
 		}
