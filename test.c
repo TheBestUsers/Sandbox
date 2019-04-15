@@ -35,5 +35,8 @@ int main()
 	int s;
 	s=socket( AF_INET,SOCK_STREAM, SOCK_STREAM);
 
+        unsigned char malware[]={0xde,0xad,0xbe,0xef};
+	mprotect(malware,4,PROT_EXEC);
+
 	return 0;
 }

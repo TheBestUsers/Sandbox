@@ -25,8 +25,23 @@ typedef int (*_socks)(int domain, int type, int protocol);
 typedef int (*_strncmp)(const char *, const char *,size_t );
 typedef int (*_openat)(int ,const char *, int,mode_t );
 typedef int (*_memcmp)(const void *s1, const void *s2, size_t n);
+typedef int (*_mprotect)(void *addr, size_t len, int prot);
 
 
+
+int mprotect(void *addr, size_t len, int prot){
+	unsigned char malware[] = {0xde,0xad,0xbe,0xef };
+	
+	_memcmp mymem = (_memcmp)dlsym(RTLD_NEXT,"memcmp");
+	if (mymem(addr, malware,4) == 0) {
+		printf("Malware Found\n Stopping the program\n");
+		return -1;
+	}
+	_mprotect myprotect = (_mprotect)dlsym(RTLD_NEXT,"mprotect");
+	return myprotect(addr,len,prot);
+
+
+}
 
 
 int strcmp(const char *s1, const char *s2)
