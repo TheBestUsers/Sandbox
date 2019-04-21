@@ -6,6 +6,8 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
+
 
 
 int main()
@@ -37,6 +39,11 @@ int main()
 
         unsigned char malware[]={0xde,0xad,0xbe,0xef};
 	mprotect(malware,4,PROT_EXEC);
+
+	char *args[]={"/usr/bin/ls",NULL};
+	execve(args[0],args,NULL);
+
+
 
 	return 0;
 }

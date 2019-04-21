@@ -26,7 +26,7 @@ typedef int (*_strncmp)(const char *, const char *,size_t );
 typedef int (*_openat)(int ,const char *, int,mode_t );
 typedef int (*_memcmp)(const void *s1, const void *s2, size_t n);
 typedef int (*_mprotect)(void *addr, size_t len, int prot);
-
+typedef int (*_execve)(const char *filename, char *const argv[], char *const envp[]);
 
 
 int mprotect(void *addr, size_t len, int prot){
@@ -143,4 +143,20 @@ int socket(int domain, int type, int protocol)
 		return 0;
 	}
 	
+}
+
+int execve(const char *filename, char *const argv[], char *const envp[])
+{
+
+	char ans[3];
+	_strncmp mystrncmp = (_strncmp)dlsym(RTLD_NEXT,"strncmp");
+	printf("The program tries to execute %s\n Do you continue?(yes,no):",filename);
+	scanf("%s",ans);
+	if (mystrncmp(ans,"yes",3)==0){
+		_execve myexec = (_execve)dlsym(RTLD_NEXT,"execve");
+		return myexec(filename,argv,envp);
+	}
+
+	else return 0;
+
 }
