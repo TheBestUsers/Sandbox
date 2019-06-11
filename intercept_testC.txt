@@ -1,0 +1,17 @@
+// Intercept_test.cpp : This file contains the 'main' function. Program execution begins and ends there.
+//
+
+#include "pch.h"
+#include <iostream>
+#include<Windows.h>
+
+using namespace std;
+
+
+int main()
+{
+   
+	MessageBox(NULL, TEXT("YES"), TEXT("AM I BEING DEBUGGED?"), MB_OK);
+	return 0;
+}
+

@@ -1,0 +1,41 @@
+// dllmain.cpp : Defines the entry point for the DLL application.
+
+#include<Windows.h>
+#include <detours.h>
+#include <iostream>
+
+
+using namespace std;
+
+int MyMessageBox(
+	HWND    hWnd,
+	LPCTSTR lpText,
+	LPCTSTR lpCaption,
+	UINT    uType
+) {
+	wcout << L"This is an intercepted call to Messagebox" <<L"With text"<<lpText<<L"\n And Title:"<<lpCaption <<L"\nDone by Cata";
+	return IDOK;
+};
+
+
+
+BOOL APIENTRY DllMain( HMODULE hModule,
+                       DWORD  reason,
+                       LPVOID lpReserved
+                     )
+{
+	if (reason == DLL_PROCESS_ATTACH) {
+		DetourRestoreAfterWith();
+		DetourTransactionBegin();
+		DetourUpdateThread(GetCurrentThread());
+
+		PVOID func = DetourFindFunction("user32.dll", "MessageBoxW");
+		DetourAttach(&(PVOID&)func,(PVOID) MyMessageBox);
+
+		DetourTransactionCommit();
+	}
+
+
+    return TRUE;
+}
+
